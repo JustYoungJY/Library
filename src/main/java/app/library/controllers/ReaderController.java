@@ -1,7 +1,8 @@
 package app.library.controllers;
 
-import app.library.dao.ReaderDAO;
 import app.library.models.Reader;
+import app.library.services.BookService;
+import app.library.services.ReaderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,23 +13,24 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("/people")
 public class ReaderController {
-    private final ReaderDAO readerDAO;
+    private final ReaderService readerService;
+    private final BookService bookService;
 
     @Autowired
-    public ReaderController(ReaderDAO readerDAO) {
-        this.readerDAO = readerDAO;
+    public ReaderController(ReaderService readerService, BookService bookService) {
+        this.readerService = readerService;
+        this.bookService = bookService;
     }
-
     @GetMapping
     public String getAllReaders(Model model) {
-        model.addAttribute("readers", readerDAO.getAllReaders());
+        model.addAttribute("readers", readerService.getAllReaders());
         return "people/getAllReaders";
     }
 
     @GetMapping("/{id}")
-    public String getReader(@PathVariable("id") int id, Model model) {
-        model.addAttribute("reader", readerDAO.getReader(id));
-        model.addAttribute("books", readerDAO.getBooksByReaderId(id));
+    public String getReader(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("reader", readerService.getReader(id).orElse(null));
+        model.addAttribute("books", bookService.getBooksByReaderId(id));
         return "people/getReader";
     }
 
@@ -44,30 +46,31 @@ public class ReaderController {
             return "people/newReader";
         }
 
-        readerDAO.createReader(reader);
+        readerService.createReader(reader);
         return "redirect:/people";
     }
 
     @GetMapping("/{id}/edit")
-    public String editReader(@PathVariable("id") int id, Model model) {
-        model.addAttribute("reader", readerDAO.getReader(id));
+    public String editReader(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("reader", readerService.getReader(id).orElse(null));
         return "people/editReader";
     }
 
     @PatchMapping("/{id}")
     public String updateReader(@ModelAttribute("reader") @Valid Reader reader,
-                               BindingResult bindingResult, @PathVariable int id) {
+                               BindingResult bindingResult, @PathVariable Long id) {
         if(bindingResult.hasErrors()) {
             return "people/editReader";
         }
 
-        readerDAO.updateReader(reader, id);
+        reader.setId(id);
+        readerService.updateReader(reader);
         return "redirect:/people";
     }
 
     @DeleteMapping("/{id}")
-    public String deleteReader(@PathVariable("id") int id) {
-        readerDAO.deleteReader(id);
+    public String deleteReader(@PathVariable("id") Long id) {
+        readerService.deleteReader(id);
         return "redirect:/people";
     }
 }

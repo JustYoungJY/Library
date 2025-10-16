@@ -9,9 +9,9 @@
   <label for="fullName">Enter full name:</label>
   <input type="text" id="fullName" th:field="*{fullName}" th:value="${reader.getFullName()}"><br><br>
     <div style="color : red" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></div>
-  <label for="yearOfBirth">Enter year of birth:</label>
-  <input type="number" id="yearOfBirth" th:field="*{yearOfBirth}" th:value="${reader.getYearOfBirth()}"><br><br>
-    <div style="color : red" th:if="${#fields.hasErrors('yearOfBirth')}" th:errors="*{yearOfBirth}"></div>
+  <label for="dateOfBirth">Enter year of birth:</label>
+  <input type="date" id="dateOfBirth" th:field="*{dateOfBirth}" th:value="${reader.getDateOfBirth()}"><br><br>
+    <div style="color : red" th:if="${#fields.hasErrors('dateOfBirth')}" th:errors="*{dateOfBirth}"></div>
   <input type="submit" value="Update!">
 </form>
 </body>

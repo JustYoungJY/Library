@@ -5,7 +5,7 @@
     <title>Reader</title>
 </head>
 <body>
-    <p th:text="${reader.getFullName() + ', ' + reader.getYearOfBirth()}"></p>
+    <p th:text="${reader.getFullName() + ', ' + reader.getDateOfBirth()}"></p>
 
     <div th:if="${books.isEmpty()}">
         <p>The reader hasn't taken any books yet.</p>
@@ -16,7 +16,7 @@
         <h4>Книги:</h4>
         <ul>
             <li th:each="book : ${books}">
-                <a th:href="@{/book/{id}(id=${book.getId()})}"
+                <a th:style="${book.isExpired()} ? 'color : red' : 'color : black'" th:href="@{/book/{id}(id=${book.getId()})}"
                    th:text="${book.getTitle() + ', ' + book.getAuthor() + ', ' + book.getYearOfWriting()}">
                     Book info
                 </a>

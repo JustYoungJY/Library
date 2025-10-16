@@ -6,7 +6,7 @@
 </head>
 <body>
 <a th:each="reader : ${readers}" th:href="@{/people/{id}(id=${reader.getId()})}">
-    <p th:text="${reader.getFullName()} + ', ' + ${reader.getYearOfBirth()}" >Reader info</p>
+    <p th:text="${reader.getFullName()} + ', ' + ${reader.getDateOfBirth()}" >Reader info</p>
 </a>
 <br>
 <hr>

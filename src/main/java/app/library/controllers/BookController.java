@@ -3,9 +3,17 @@ package app.library.controllers;
 import app.library.dao.BookDAO;
 import app.library.dao.ReaderDAO;
 import app.library.models.Book;
+import app.library.services.BookService;
+import app.library.services.ReaderService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.Reader;
@@ -13,25 +21,29 @@ import java.io.Reader;
 @Controller
 @RequestMapping("/book")
 public class BookController {
-    private final BookDAO bookDAO;
-    private final ReaderDAO readerDAO;
+    private final ReaderService readerService;
+    private final BookService bookService;
 
-    public BookController(BookDAO bookDAO, ReaderDAO readerDAO) {
-        this.bookDAO = bookDAO;
-        this.readerDAO = readerDAO;
+    @Autowired
+    public BookController(ReaderService readerService, BookService bookService) {
+        this.readerService = readerService;
+        this.bookService = bookService;
     }
 
     @GetMapping
-    public String getAllBook(Model model) {
-        model.addAttribute("books", bookDAO.getALlBooks());
+    public String getAllBook(Model model, @RequestParam(value = "page", required = false) Integer page,
+                             @RequestParam(value = "books_per_page", required = false) Integer booksPerPage,
+                             @RequestParam(value = "sort_by_year", defaultValue = "false") boolean sortByYear) {
+        model.addAttribute("books", bookService.getAllBooks(page, booksPerPage, sortByYear));
+
         return "books/getAllBooks";
     }
 
     @GetMapping("/{id}")
-    public String getBook(@PathVariable("id") int id, Model model) {
-        model.addAttribute("book", bookDAO.getBook(id));
-        model.addAttribute("reader", bookDAO.getBookReader(id));
-        model.addAttribute("readers", readerDAO.getAllReaders());
+    public String getBook(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("book", bookService.getBook(id).orElse(null));
+        model.addAttribute("reader", readerService.getReaderByBookId(id).orElse(null));
+        model.addAttribute("readers", readerService.getAllReaders());
         return "books/getBook";
     }
 
@@ -41,47 +53,54 @@ public class BookController {
     }
 
     @PostMapping
-    public String createBook(@ModelAttribute("model") Book book, BindingResult bindingResult) {
+    public String createBook(@ModelAttribute("book") @Valid Book book, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "books/newBook";
         }
 
-        bookDAO.createBook(book);
+        bookService.createBook(book);
         return "redirect:/book";
     }
 
     @GetMapping("/{id}/edit")
-    public String getEditBook(@PathVariable("id") int id, Model model) {
-        model.addAttribute("book", bookDAO.getBook(id));
+    public String getEditBook(@PathVariable("id") Long id, Model model) {
+        model.addAttribute("book", bookService.getBook(id).orElse(null));
         return "books/editBook";
     }
 
     @PatchMapping("/{id}")
-    public String updateBook(@ModelAttribute("model") Book book, BindingResult bindingResult,
-                             @PathVariable("id") int id) {
+    public String updateBook(@ModelAttribute("book") @Valid Book book, BindingResult bindingResult,
+                             @PathVariable("id") Long id) {
         if(bindingResult.hasErrors()) {
             return "books/editBook";
         }
 
-        bookDAO.updateBook(book, id);
+        book.setId(id);
+        bookService.updateBook(book);
         return "redirect:/book";
     }
 
     @DeleteMapping("/{id}")
-    public String deleteBook(@PathVariable("id") int id) {
-        bookDAO.deleteBook(id);
+    public String deleteBook(@PathVariable("id") Long id) {
+        bookService.deleteBook(id);
         return "redirect:/book";
     }
 
     @PatchMapping("/{id}/assign")
-    public String assignBook(@PathVariable("id") int bookId, @RequestParam int readerId) {
-        bookDAO.assignBook(bookId, readerId);
+    public String assignBook(@PathVariable("id") Long bookId, @RequestParam Long readerId) {
+        bookService.assignBook(bookId, readerId);
         return "redirect:/book/" + bookId;
     }
 
     @PatchMapping("/{id}/release")
-    public String releaseBook(@PathVariable("id") int bookId) {
-        bookDAO.releaseBook(bookId);
+    public String releaseBook(@PathVariable("id") Long bookId) {
+        bookService.releaseBook(bookId);
         return "redirect:/book/" + bookId;
+    }
+
+    @GetMapping("/search")
+    public String searchBook(Model model, @RequestParam(value = "pattern", required = false) String pattern) {
+        model.addAttribute("book", bookService.getBookByPattern(pattern).orElse(null));
+        return "books/searchBook";
     }
 }

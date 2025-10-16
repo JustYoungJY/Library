@@ -1,38 +1,53 @@
 package app.library.models;
 
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import org.hibernate.validator.constraints.Range;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.util.Date;
+import java.util.List;
+
+@Entity
 public class Reader {
-        private Integer id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @Column(name = "id")
+        private Long id;
 
         @Pattern(regexp = "^([A-Z][a-z]+)(\\s[A-Z][a-z]+)*$",
         message = "Full name should be capitalized (e.g., Ivan Ivanovich Ivanov)")
         @NotEmpty(message = "Full name should not be empty")
         @Size(min = 3, max = 255, message = "Full name should be between 3 and 255 characters")
+        @Column(name = "full_name")
         private String fullName;
 
-        @NotNull(message = "Year of birth should not be empty")
-        @Range(min = 1900, max = 2025, message = "Year of birth should be between 1900 and 2025")
-        private Integer yearOfBirth;
+        @NotNull(message = "Date of birth should not be empty")
+        @Column(name = "date_of_birth")
+        @Temporal(TemporalType.DATE)
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        private Date dateOfBirth;
+
+        @OneToMany(mappedBy = "reader")
+        private List<Book> books;
 
         public Reader() {
         }
 
-        public Reader(Integer id, String fullName, Integer yearOfBirth) {
+        public Reader(Long id, String fullName, Date dateOfBirth) {
                 this.id = id;
                 this.fullName = fullName;
-                this.yearOfBirth = yearOfBirth;
+                this.dateOfBirth = dateOfBirth;
         }
 
-        public Integer getId() {
+        public Long getId() {
                 return id;
         }
 
-        public void setId(Integer id) {
+        public void setId(Long id) {
                 this.id = id;
         }
 
@@ -44,11 +59,19 @@ public class Reader {
                 this.fullName = fullName;
         }
 
-        public Integer getYearOfBirth() {
-                return yearOfBirth;
+        public Date getDateOfBirth() {
+                return dateOfBirth;
         }
 
-        public void setYearOfBirth(Integer yearOfBirth) {
-                this.yearOfBirth = yearOfBirth;
+        public void setDateOfBirth(Date dateOfBirth) {
+                this.dateOfBirth = dateOfBirth;
+        }
+
+        public List<Book> getBooks() {
+                return books;
+        }
+
+        public void setBooks(List<Book> books) {
+                this.books = books;
         }
 }
