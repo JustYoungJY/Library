@@ -1,15 +1,7 @@
 package app.library.dao;
 
-import app.library.models.Book;
-import app.library.models.Reader;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import java.util.List;
 
 @Component
 @RequestMapping("/reader")

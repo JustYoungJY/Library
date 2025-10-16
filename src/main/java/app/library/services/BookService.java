@@ -30,11 +30,11 @@ public class BookService {
     public List<Book> getAllBooks(Integer page, Integer booksPerPage, boolean sortByYear) {
         Sort sort = Sort.unsorted();
 
-        if(sortByYear) {
+        if (sortByYear) {
             sort = Sort.by("yearOfWriting");
         }
 
-        if(page == null || booksPerPage == null || page < 0 || booksPerPage < 1 ) {
+        if (page == null || booksPerPage == null || page < 0 || booksPerPage < 1) {
             return bookRepository.findAll(sort);
         }
 
@@ -65,7 +65,7 @@ public class BookService {
     public void assignBook(long bookId, long readerId) {
         Reader reader = readerRepository.findById(readerId).orElse(null);
         Book book = bookRepository.findById(bookId).orElse(null);
-        if(reader != null && book != null) {
+        if (reader != null && book != null) {
             reader.getBooks().add(book);
             book.setReader(reader);
             book.setTimeOfTaking(OffsetDateTime.now());
@@ -77,7 +77,7 @@ public class BookService {
     @Transactional(readOnly = false)
     public void releaseBook(long bookId) {
         Book book = bookRepository.findById(bookId).orElse(null);
-        if(book != null && book.getReader() != null) {
+        if (book != null && book.getReader() != null) {
             book.getReader().getBooks().remove(book);
             book.setReader(null);
             bookRepository.save(book);
@@ -86,8 +86,8 @@ public class BookService {
 
     public List<Book> getBooksByReaderId(long id) {
         List<Book> books = bookRepository.findByReaderId(id);
-        for(Book book : books) {
-            if(OffsetDateTime.now().minusDays(10).isAfter(book.getTimeOfTaking())) {
+        for (Book book : books) {
+            if (OffsetDateTime.now().minusDays(10).isAfter(book.getTimeOfTaking())) {
                 book.setExpired(true);
             }
         }

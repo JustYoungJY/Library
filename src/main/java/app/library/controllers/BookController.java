@@ -1,22 +1,14 @@
 package app.library.controllers;
 
-import app.library.dao.BookDAO;
-import app.library.dao.ReaderDAO;
 import app.library.models.Book;
 import app.library.services.BookService;
 import app.library.services.ReaderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.Reader;
 
 @Controller
 @RequestMapping("/book")
@@ -71,7 +63,7 @@ public class BookController {
     @PatchMapping("/{id}")
     public String updateBook(@ModelAttribute("book") @Valid Book book, BindingResult bindingResult,
                              @PathVariable("id") Long id) {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "books/editBook";
         }
 

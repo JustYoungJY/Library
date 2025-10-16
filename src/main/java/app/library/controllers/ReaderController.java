@@ -21,6 +21,7 @@ public class ReaderController {
         this.readerService = readerService;
         this.bookService = bookService;
     }
+
     @GetMapping
     public String getAllReaders(Model model) {
         model.addAttribute("readers", readerService.getAllReaders());
@@ -42,7 +43,7 @@ public class ReaderController {
     @PostMapping
     public String createPerson(@ModelAttribute("reader") @Valid Reader reader, BindingResult bindingResult) {
 
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "people/newReader";
         }
 
@@ -59,7 +60,7 @@ public class ReaderController {
     @PatchMapping("/{id}")
     public String updateReader(@ModelAttribute("reader") @Valid Reader reader,
                                BindingResult bindingResult, @PathVariable Long id) {
-        if(bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "people/editReader";
         }
 

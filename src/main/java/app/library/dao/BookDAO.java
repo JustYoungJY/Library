@@ -1,12 +1,6 @@
 package app.library.dao;
 
-import app.library.models.Book;
-import app.library.models.Reader;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
-
-import java.util.List;
 
 @Controller
 public class BookDAO {
