@@ -67,8 +67,7 @@ public class BookController {
             return "books/editBook";
         }
 
-        book.setId(id);
-        bookService.updateBook(book);
+        bookService.updateBook(book, id);
         return "redirect:/book";
     }
 

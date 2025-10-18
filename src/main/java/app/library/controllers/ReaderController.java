@@ -3,6 +3,7 @@ package app.library.controllers;
 import app.library.models.Reader;
 import app.library.services.BookService;
 import app.library.services.ReaderService;
+import app.library.util.ReaderValidator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,11 +16,13 @@ import org.springframework.web.bind.annotation.*;
 public class ReaderController {
     private final ReaderService readerService;
     private final BookService bookService;
+    private final ReaderValidator readerValidator;
 
     @Autowired
-    public ReaderController(ReaderService readerService, BookService bookService) {
+    public ReaderController(ReaderService readerService, BookService bookService, ReaderValidator readerValidator) {
         this.readerService = readerService;
         this.bookService = bookService;
+        this.readerValidator = readerValidator;
     }
 
     @GetMapping
@@ -42,7 +45,7 @@ public class ReaderController {
 
     @PostMapping
     public String createPerson(@ModelAttribute("reader") @Valid Reader reader, BindingResult bindingResult) {
-
+        readerValidator.validate(reader, bindingResult);
         if (bindingResult.hasErrors()) {
             return "people/newReader";
         }
@@ -60,12 +63,12 @@ public class ReaderController {
     @PatchMapping("/{id}")
     public String updateReader(@ModelAttribute("reader") @Valid Reader reader,
                                BindingResult bindingResult, @PathVariable Long id) {
+        readerValidator.validate(reader, bindingResult);
         if (bindingResult.hasErrors()) {
             return "people/editReader";
         }
 
-        reader.setId(id);
-        readerService.updateReader(reader);
+        readerService.updateReader(reader, id);
         return "redirect:/people";
     }
 

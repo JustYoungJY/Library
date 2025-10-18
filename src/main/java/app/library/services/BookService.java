@@ -52,7 +52,13 @@ public class BookService {
     }
 
     @Transactional(readOnly = false)
-    public void updateBook(Book book) {
+    public void updateBook(Book book, Long id) {
+        book.setId(id);
+        Optional<Book> bookOptional = bookRepository.findById(id);
+        bookOptional.ifPresent(value -> {
+            book.setReader(value.getReader());
+            book.setTimeOfTaking(value.getTimeOfTaking());
+        });
         bookRepository.save(book);
     }
 

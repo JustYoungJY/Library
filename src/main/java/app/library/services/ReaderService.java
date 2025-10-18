@@ -35,7 +35,8 @@ public class ReaderService {
     }
 
     @Transactional(readOnly = false)
-    public void updateReader(Reader reader) {
+    public void updateReader(Reader reader, Long id) {
+        reader.setId(id);
         readerRepository.save(reader);
     }
 
